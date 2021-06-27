@@ -80,13 +80,13 @@ class ZigbeeMqttAdapter extends Adapter {
 
   handleIncomingMessage(topic, data) {
     const msg = JSON.parse(data.toString());
-    if (topic.startsWith(`${this.config.prefix}/bridge/config/devices`)) {
+    if (topic.includes('/bridge/config/devices')) {
       for (const device of msg) {
         this.addDevice(device);
       }
     }
 
-    if (!topic.startsWith(`${this.config.prefix}/bridge`)) {
+    if (!topic.includes('/bridge')) {
       const topicElements = topic.split("/");
       const friendlyName = topicElements[topicElements.length - 1];
       const device = this.getDevice(friendlyName);
