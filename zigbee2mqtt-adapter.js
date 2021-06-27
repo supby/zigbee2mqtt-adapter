@@ -66,11 +66,15 @@ class ZigbeeMqttAdapter extends Adapter {
     this.config = manifest.moziot.config;
     addonManager.addAdapter(this);
 
-    this.client = mqtt.connect(this.config.mqtt);
-    this.client.on('error', error => console.error('mqtt error', error));
-    this.client.on('message', this.handleIncomingMessage.bind(this));
-    this.client.subscribe(`${this.config.prefix}/bridge/config/devices`);
-    this.client.publish(`${this.config.prefix}/bridge/config/devices/get`);
+    this.clients = this.config.prefixes.map(prefix => {
+      const client = mqtt.connect(this.config.mqtt);
+      client.on('error', error => console.error('mqtt error', error));
+      client.on('message', this.handleIncomingMessage.bind(this));
+      client.subscribe(`${prefix}/bridge/config/devices`);
+      client.publish(`${prefix}/bridge/config/devices/get`);
+
+      return { client, prefix };
+    });
   }
 
   handleIncomingMessage(topic, data) {
@@ -113,7 +117,9 @@ class ZigbeeMqttAdapter extends Adapter {
   }
 
   publishMessage(topic, msg) {
-    this.client.publish(`${this.config.prefix}/${topic}`, JSON.stringify(msg));
+    for (const client of this.clients) {
+      client.client.publish(`${client.prefix}/${topic}`, JSON.stringify(msg));
+    }
   }
 
   addDevice(info) {
@@ -128,14 +134,19 @@ class ZigbeeMqttAdapter extends Adapter {
     }
 
     const device = new MqttDevice(this, info.friendly_name, info.modelID);
-    this.client.subscribe(`${this.config.prefix}/${info.friendly_name}`);
+
+    for (const client of this.clients) {
+      client.client.subscribe(`${client.prefix}/${info.friendly_name}`);
+    }
 
     this.handleDeviceAdded(device);
     console.info(`New device model:${info.modelID}, friendlyName:${info.friendly_name} is added.`);
   }
 
   startPairing(_timeoutSeconds) {
-    this.client.publish(`${this.config.prefix}/bridge/config/devices/get`);
+    for (const client of this.clients) {
+      client.client.publish(`${client.prefix}/bridge/config/devices/get`);
+    }
     // TODO: Set permitJoin
   }
 

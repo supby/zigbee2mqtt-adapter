@@ -1,7 +1,7 @@
 {
   "name": "zigbee2mqtt-adapter",
   "display_name": "zigbee2mqtt adapter",
-  "version": "0.2.6",
+  "version": "99.99.99",
   "description": "Brings all your zigbee devices to the gateway through mqtt bridge",
   "main": "index.js",
   "keywords": [
@@ -55,9 +55,13 @@
           "type": "string",
           "description": "Mosquitto or other mqtt server host/port to connect to"
         },
-        "prefix": {
-          "type": "string",
-          "description": "Mqtt topic prefix for zigbee2mqtt"
+        "prefixes": {
+          "type": "array",
+          "description": "List of Mqtt topic prefixes for zigbee2mqtt",
+          "items": {
+            "type": "string",
+            "description": "Mqtt topic prefix"
+          }
         }
       }
     }
