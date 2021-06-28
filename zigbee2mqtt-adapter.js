@@ -96,7 +96,7 @@ class ZigbeeMqttAdapter extends Adapter {
       const device = this.getDevice(friendlyName);
       if (!device) {
         console.info(`[handleIncomingMessage] Adding new Device id:${friendlyName}`);
-        addDeviceFromStateMessage(msg.device)
+        this.addDeviceFromStateMessage(msg.device);
         return;
       }
       if (msg.action && device.events.get(msg.action)) {
