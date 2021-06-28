@@ -73,6 +73,10 @@ class ZigbeeMqttAdapter extends Adapter {
       this.config.prefixes.map((prefix) => `${prefix}/bridge/config/devices`)
     );
 
+    this.client.subscribe(
+      this.config.prefixes.map((prefix) => `${prefix}/+`)
+    );
+
     for (const prefix of this.config.prefixes) {
       this.client.publish(`${prefix}/bridge/config/devices/get`);
     }
