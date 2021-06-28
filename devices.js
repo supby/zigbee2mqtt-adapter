@@ -255,5 +255,27 @@ module.exports = {
         readOnly: true,
       },
     },
+  },
+  "TI0001": {
+    name: 'LIVOLO Switch',
+    '@type': ['Light', 'OnOffSwitch'],
+    properties: {
+      state_left: {
+        '@type': 'OnOffProperty',
+        type: 'boolean',
+        fromMqtt: v => v === 'ON',
+        toMqtt: v => (v ? 'ON' : 'OFF'),
+      },
+      state_right: {
+        '@type': 'OnOffProperty',
+        type: 'boolean',
+        fromMqtt: v => v === 'ON',
+        toMqtt: v => (v ? 'ON' : 'OFF'),
+      },
+      linkquality: {
+        type: 'integer',
+        readOnly: true,
+      },
+    },
   }
 };
